@@ -39,3 +39,27 @@ export function upload(param) {
         data: param
     })
 }
+
+export function addCiCompanyAndPlatform(param) {
+    return request({
+        url: '/ci/addCiCompanyAndPlatform',
+        method: 'post',
+        data: param
+    })
+}
+
+export function editCiCompanyLoan(param) {
+    return request({
+        url: '/ci/editCiCompanyLoan',
+        method: 'post',
+        data: param
+    })
+}
+
+export function findCiCompanyLoanList(param) {
+    return request({
+        url: '/ci/findCiCompanyLoanList',
+        method: 'post',
+        data: param
+    })
+}

@@ -20,56 +20,57 @@
                     <el-input v-model="ruleForm.loanAmount"></el-input>
                 </el-form-item>
                 <el-form-item label="贷款利率" prop="loanRate">
-                    <span>6%</span>
+                    <span>{{ruleForm.loanRate}}%</span>
                 </el-form-item>
-                 <el-form-item label="贷款期限" prop="LoanTimeLimit">
-                    <el-select v-model="ruleForm.LoanTimeLimit" placeholder="请选择活动区域">
-                    <el-option label="区域一" value="shanghai"></el-option>
-                    <el-option label="区域二" value="beijing"></el-option>
+                 <el-form-item label="贷款期限" prop="loanTerm">
+                    <el-select v-model="ruleForm.loanTerm" placeholder="请选择贷款期限">
+                    <el-option label="1个月" value="1"></el-option>
+                    <el-option label="2个月" value="2"></el-option>
+                    <el-option label="3个月" value="3"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="保险金额（元）" prop="insuredAmount">
-                    <el-input v-model="ruleForm.insuredAmount"></el-input>
+                <el-form-item label="保险金额（元）" prop="insuranceMoney">
+                    <el-input v-model="ruleForm.insuranceMoney"></el-input>
                 </el-form-item>
-                <el-form-item label="保险费率" prop="insuranceRates">
-                    <span>6%</span>
+                <el-form-item label="保险费率" prop="insuranceRate">
+                    <span>{{ruleForm.insuranceRate}}%</span>
                 </el-form-item>
-                <el-form-item label="手续费" prop="poundage">
-                    <span>6%</span>
+                <el-form-item label="手续费率" prop="handlingRate">
+                    <span>x.xx%</span>
                 </el-form-item>
-                <el-form-item label="累计费率" prop="cumulativeRate">
-                    <span>6%</span>
+                <el-form-item label="累计费率" prop="totalFeeRate">
+                    <span>x.xx%</span>
                 </el-form-item>
-                <el-form-item label="手机号" prop="phone">
-                    <el-input v-model="ruleForm.phone"></el-input>
+                <el-form-item label="手机号" prop="contactPhone">
+                    <el-input v-model="ruleForm.contactPhone"></el-input>
                 </el-form-item>
                 <el-row :gutter="20">
                     <el-col :span="16">
-                    <el-form-item label="验证码" prop="phoneCode">
-                        <el-input v-model="ruleForm.phoneCode"></el-input>
+                    <el-form-item label="验证码" prop="verifyCode">
+                        <el-input v-model="ruleForm.verifyCode"></el-input>
                     </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                    <el-button>获取验证码</el-button>
+                    <el-button @click="getCode" :disabled="btnStatus">{{paracont}}</el-button>
                     </el-col>
                 </el-row>
-                <el-form-item label="投保人声明" prop="name">
+                <el-form-item label="投保人声明">
                     <el-input
                         type="textarea"
                         :rows="5"
                         placeholder="请输入内容"
-                        v-model="ruleForm.declaration">
+                        v-model="declaration">
                     </el-input>
                 </el-form-item>
-                <el-form-item label="" prop="type">
-                    <el-checkbox-group v-model="ruleForm.type">
-                    <el-checkbox label="本人已确认" name="type"></el-checkbox>
+                <el-form-item label="">
+                    <el-checkbox-group v-model="selfSure">
+                    <el-checkbox label="本人已确认"></el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
                 <el-form-item label="" prop="type">
                     <el-col :span="2">
-                        <el-checkbox-group v-model="ruleForm.type">
-                            <el-checkbox label="" name="type"></el-checkbox>
+                        <el-checkbox-group v-model="readAgree">
+                            <el-checkbox label=""></el-checkbox>
                         </el-checkbox-group>
                     </el-col>
                     <span style="color:#606266">我已阅读并同意<label style="color:#409EFF;cursor:pointer;"><span>《银行贷款协议》</span><span>《保险条款》</span><span>《保单电子版》</span><span>《豆沙包服务协议》</span></label></span>
@@ -83,48 +84,44 @@
 </template>
 
 <script>
-
+import { editCiCompanyLoan, getVerifyCode  } from '@/api/register'
 export default {
   name: 'register',
   data() {
     return {
-        
+        btnStatus:false,
+        paracont:'获取验证码',
         ruleForm: {
             loanAmount: '',
-            loanRate: '',
-            LoanTimeLimit: '',
-            insuredAmount: '',
-            insuranceRates: '',
-            poundage: '',
-            cumulativeRate: '',
-            phone: '',
-            phoneCode:'',
-            declaration:'保险人已将中小企业贷款保证保险所使用的条款（包括责任免除及退保内容）和特别约定向本人做了明确说明，本人已充分理解；上述所填内容均属实，同意以此保单作为订立保险合同的依据。'
+            loanRate: '6',
+            loanTerm: '',
+            insuranceMoney: '',
+            insuranceRate: '3',
+            handlingRate: '1',
+            totalFeeRate: '1',
+            contactPhone: '',
+            verifyCode:'',
         },
+        declaration:'保险人已将中小企业贷款保证保险所使用的条款（包括责任免除及退保内容）和特别约定向本人做了明确说明，本人已充分理解；上述所填内容均属实，同意以此保单作为订立保险合同的依据。',
         rules: {
-            name: [
-                { required: true, message: '请输入活动名称', trigger: 'blur' },
-                { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+            loanAmount: [
+                { required: true, message: '请输入贷款金额', trigger: 'blur' },
             ],
-            region: [
-                { required: true, message: '请选择活动区域', trigger: 'change' }
+            loanTerm: [
+                { required: true, message: '请选择贷款期限', trigger: 'change' }
             ],
-            date1: [
-                { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
+            insuranceMoney: [
+                {required: true, message: '请输入保险金额', trigger: 'change' }
             ],
-            date2: [
-                { type: 'date', required: true, message: '请选择时间', trigger: 'change' }
+            contactPhone: [
+                { required: true, message: '请输入手机号', trigger: 'change' }
             ],
-            type: [
-                { type: 'array', required: true, message: '请至少选择一个活动性质', trigger: 'change' }
-            ],
-            resource: [
-                { required: true, message: '请选择活动资源', trigger: 'change' }
-            ],
-            desc: [
-                { required: true, message: '请填写活动形式', trigger: 'blur' }
+            verifyCode: [
+                { required: true, message: '请输入验证码', trigger: 'change' }
             ]
-        }
+        },
+        selfSure:false,
+        readAgree:false,
     }
   },
   computed: {
@@ -133,12 +130,14 @@ export default {
   methods: {
     submitForm(formName) {
         this.$refs[formName].validate((valid) => {
-            this.submitSuccess();
             if (valid) {
-            alert('submit!');
+                editCiCompanyLoan(this.ruleForm).then(result=>{
+                    this.$router.push({path:'/registerEnd'})
+                }).catch(err=>{
+                    this.$message.error(err.msg);
+                })
             } else {
-            console.log('error submit!!');
-            return false;
+                return false;
             }
         });
     },
@@ -151,8 +150,42 @@ export default {
                 this.$router.push({path:'/registerEnd'})
             }
         });
-    }
-    }
+    },
+    //获取验证码
+    getCode () {
+        var second = null, timePromise = undefined;
+        if (second === null) {
+            second = 60;
+            if (!this.ruleForm.contactPhone) {
+                this.$message({message:'手机号不能为空',type:'error'})
+                second = null;
+                return false;
+            } else {
+                getVerifyCode({telephone:this.ruleForm.contactPhone}).then(result => {
+                    const _this = this;
+                    this.btnStatus = true;
+                    timePromise = setInterval(function () {
+                        if (second <= 0) {
+                            clearInterval(timePromise);
+                            timePromise = undefined;
+                            second = null;
+                            _this.paracont = "重发验证码";
+                            _this.btnStatus = false;
+                        } else {
+                            _this.paracont = second + "s";
+                            second--;
+                        }
+                    }, 1000);
+                }).catch(err => {
+                    this.$message({message:err.msg,type:'error'})
+                    second = null;
+                })
+            }
+        } else {
+            return false;
+        }
+    },
+}
 }
 </script>
 

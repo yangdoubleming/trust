@@ -1,64 +1,166 @@
 <template>
-    <section>
-        <el-table
-            :data="tableData"
-            style="width: 100%">
-            <el-table-column
-                prop="date"
-                label="日期"
-                width="180">
-            </el-table-column>
-            <el-table-column
-                prop="name"
-                label="姓名"
-                width="180">
-            </el-table-column>
-            <el-table-column
-                prop="address"
-                label="地址">
+    <section class="wscn-http404-container">
+        <!--查询栏-->
+		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
+			<el-form :inline="true" :model="ruleForm" :rules="rules" ref="ruleForm" class="demo-form-inline">
+                <el-form-item label="贷款期限" prop="loanTerm">
+                    <el-select v-model="ruleForm.loanTerm" placeholder="状态">
+                        <el-option label="1个月" value="1"></el-option>
+                        <el-option label="2个月" value="2"></el-option>
+                        <el-option label="3个月" value="3"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="贷款状态" prop="status">
+                    <el-select v-model="ruleForm.status" placeholder="状态">
+                        <el-option label="审核中" value="1"></el-option>
+                        <el-option label="已终止" value="2"></el-option>
+                        <el-option label="放款中" value="3"></el-option>
+                        <el-option label="未结清" value="4"></el-option>
+                        <el-option label="已逾期" value="5"></el-option>
+                        <el-option label="已结清" value="6"></el-option>
+                        <el-option label="还款中" value="7"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="submitForm('ruleForm')">查询</el-button>
+                </el-form-item>
+            </el-form>
+		</el-col>
+
+        <!-- 表格 -->
+        <el-table :data="tableData" style="width: 100%">
+            <el-table-column prop="loanNo" label="货款编号" width="250"> </el-table-column>
+            <el-table-column prop="contactName" label="店铺名称" width="280"> </el-table-column>
+            <el-table-column prop="loanTerm" label="贷款期限（月）" width="120"></el-table-column>
+            <el-table-column prop="loanAmount" label="贷款金额（元）" width="180"> </el-table-column>
+            <el-table-column prop="applyTime" label="申请时间" width="160"> </el-table-column>
+            <el-table-column prop="status" label="贷款状态" width="250"></el-table-column>
+            <el-table-column prop="name" label="操作" width="180">
+                <template slot-scope="scope">
+                    <el-button
+                        @click="customerInsureDetails(scope.row)"
+                        type="text"
+                        size="small">
+                        详情
+                    </el-button>
+                </template>
             </el-table-column>
         </el-table>
+
+        <!-- 工具条 -->
+        <div class="pageDown">
+            <el-pagination
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page="ruleForm.pageNum"
+                :page-sizes="[10, 20, 30, 50]"
+                :page-size="ruleForm.pageSize"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="total">
+            </el-pagination>
+        </div>
     </section>
 </template>
 
 <script>
+    
+   import { findCiCompanyLoanList } from '@/api/register'
 
     export default {
         data() {
             return {
-                tableData: [{
-                    date: '2016-05-02',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1518 弄'
-                }, {
-                    date: '2016-05-04',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1517 弄'
-                }, {
-                    date: '2016-05-01',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1519 弄'
-                }, {
-                    date: '2016-05-03',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1516 弄'
-                }]
+                tableData: [],
+                total:0,
+                ruleForm: {
+                    pageNum: 1,
+                    pageSize: 10,
+                    status: "",
+                    loanTerm: ""
+                },
+                rules: {
+                    ticketNo: [
+                        { }
+                    ],
+                    expressNo: [
+                        {  }
+                    ],
+                    telephone: [
+                        { }
+                    ]
+                }
             }
         },
         computed: {
-            
         },
         created() {
             this.fetchData()
         },
         methods: {
             fetchData() {
-                
-            }
+                findCiCompanyLoanList(this.ruleForm).then(response => {
+                    this.tableData = response.data.list
+                    this.total = response.data.total
+                }).catch(err=>{
+                    this.$message.error(err.msg);
+                })
+            },
+            handleSizeChange(val) {
+                this.ruleForm.pageSize = val
+                this.ruleForm.pageNum = 1
+                this.fetchData()
+            },
+            handleCurrentChange(val) {
+                this.ruleForm.pageNum = val
+                this.fetchData()
+            },
+            submitForm(formName) {
+                const _this = this;
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        if(_this.ruleForm.time&&_this.ruleForm.time.length>0){
+                            _this.ruleForm.applyStartTime = _this.ruleForm.time[0];
+                            _this.ruleForm.applyEndTime = _this.ruleForm.time[1];
+                        }else{
+                            _this.ruleForm.applyStartTime = '';
+                            _this.ruleForm.applyEndTime = '';
+                        }
+                        _this.ruleForm.pageNum = 1
+                        _this.fetchData()
+
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },
+            resetForm(formName) {
+                this.$refs[formName].resetFields();
+            },
+             //时间格式化
+            dateFormat(row, column) {
+                var date = row[column.property];
+                  if (date == undefined) {
+                    return "";
+                }
+                return moment(date).format("YYYY-MM-DD HH:mm:ss")
+            },
+            statusText(row, column){
+                return formatterColumn(row.status)
+            },
+            customerInsureDetails(row){
+                this.$router.push({path:'/orderManage/customerInsureDetails',query: {id:row.id,productId:row.productId}})
+            },
         }
     }      
 </script>
 
 <style>
-   
+.wscn-http404-container{
+  width: 90%;
+    margin: 50px auto;
+}
+.pageDown{
+        float: right;
+        margin-top: 15px;
+    }
 </style>

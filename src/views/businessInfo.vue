@@ -76,8 +76,8 @@
                             <i v-else class="el-icon-plus avatar-uploader-icon">营业执照</i>
                         </el-upload>
                 </el-form-item>
-                <el-form-item label="合作物流公司" prop="LogisticsCompany">
-                    <el-input v-model="ruleForm.LogisticsCompany" placeholder="请输入合作物流公司"></el-input>
+                <el-form-item label="合作物流公司" prop="logisticsCompany">
+                    <el-input v-model="ruleForm.logisticsCompany" placeholder="请输入合作物流公司"></el-input>
                 </el-form-item>      
                 <el-form-item label="">
                     <el-upload
@@ -157,7 +157,7 @@
 
 <script>
 import { BASE_URL } from '../utils/config'
-import { upload  } from '@/api/register'
+import { upload, addCiCompanyAndPlatform  } from '@/api/register'
 var token =  JSON.parse(localStorage.getItem('user')).token
 export default {
   name: 'register',
@@ -166,10 +166,14 @@ export default {
         baseUrl:`${BASE_URL}/ci/upload`,
         myHeaders: {token: token},
         imageUrl:'',
+        imageUrlHzwl:'',
+        imageUrlHzzf:'',
+        imageUrlIdFront:'',
+        imageUrlIdBack:'',
         ruleForm: {
             companyPlatformList: [],
             tradingCertificate: '',
-            LogisticsCompany: '',
+            logisticsCompany: '',
             logisticsAgreement:'', //物流公司图片
             paymentCompany: '',
             paymentAgreement:'', //合作支付公司图片
@@ -184,7 +188,7 @@ export default {
             // tradingCertificate: [
             //     { required: true, message: '请选择营业执照', trigger: 'blur' },
             // ],
-            // LogisticsCompany: [
+            // logisticsCompany: [
             //     { required: true, message: '请选择合作物流公司', trigger: 'blur' }
             // ],
             // paymentCompany: [
@@ -207,10 +211,12 @@ export default {
         this.$refs[formName].validate((valid) => {
           if (valid) {
             this.ruleForm.companyPlatformList = this.changeData(this.ruleForm.companyPlatformList)
-            console.log(this.ruleForm)
-            // this.submitSuccess()
+            addCiCompanyAndPlatform(this.ruleForm).then(result=>{
+                this.$router.push({path:'/insuranceInfo'})
+            }).catch(err=>{
+                this.$message.error(err.msg)
+            })
           } else {
-            console.log('error submit!!');
             return false;
           }
         });
@@ -277,46 +283,25 @@ export default {
     // 营业执照
     handleYyzz(res, file){
         this.imageUrl = URL.createObjectURL(file.raw);
-        this.tradingCertificate = res.data;
+        this.ruleForm.tradingCertificate = res.data;
+        console.log(res.data)
     },
     beforeHandleYyzz(file){
-        const isJPG = file.type === 'image/jpeg';
-        const isLt2M = file.size / 1024 / 1024 < 2;
-
-        if (!isJPG) {
-          this.$message.error('上传头像图片只能是 JPG 格式!');
-          return
-        }
-        if (!isLt2M) {
-          this.$message.error('上传头像图片大小不能超过 2MB!');
-          return
-        }
 
     },
     //合作物流
     handleHzwl(res, file){
         this.imageUrlHzwl = URL.createObjectURL(file.raw);
-        this.logisticsAgreement = res.data;
+        this.ruleForm.logisticsAgreement = res.data;
     },
     beforeHandleHzwl(file){
-        const isJPG = file.type === 'image/jpeg';
-        const isLt2M = file.size / 1024 / 1024 < 2;
-
-        if (!isJPG) {
-          this.$message.error('上传头像图片只能是 JPG 格式!');
-          return
-        }
-        if (!isLt2M) {
-          this.$message.error('上传头像图片大小不能超过 2MB!');
-          return
-        }
-
+        
     },
 
     //合作物流
     handleHzzf(res, file){
         this.imageUrlHzzf = URL.createObjectURL(file.raw);
-        this.paymentAgreement = res.data;
+        this.ruleForm.paymentAgreement = res.data;
     },
     beforeHandleHzzf(file){
         const isJPG = file.type === 'image/jpeg';
@@ -335,7 +320,7 @@ export default {
     //身份证正面
     handleIdFront(res, file){
         this.imageUrlIdFront = URL.createObjectURL(file.raw);
-        this.legalPersonIdFront = res.data;
+        this.ruleForm.legalPersonIdFront = res.data;
     },
     beforeHandleIdFront(file){
         const isJPG = file.type === 'image/jpeg';
@@ -355,7 +340,7 @@ export default {
     //身份证反面
     handleIdBack(res, file){
         this.imageUrlIdBack = URL.createObjectURL(file.raw);
-        this.legalPersonIdBack = res.data;
+        this.ruleForm.legalPersonIdBack = res.data;
     },
     beforeHandleIdBack(file){
         const isJPG = file.type === 'image/jpeg';

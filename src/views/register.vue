@@ -216,11 +216,9 @@ export default {
         submitLoginForm(formName){
             this.$refs[formName].validate((valid) => {
                 if (valid) {
-                    console.log(7777,this.loginForm)
                     login(this.loginForm).then(result=>{
-                        console.log(11111,result)
                         localStorage.setItem('user', JSON.stringify(result))
-                        this.$$router.push({path:'/businessInfo'})
+                        this.$router.push({path:'/businessInfo'})
                     }).catch(err=>{
                         this.$message.error(err.msg)
                     })
