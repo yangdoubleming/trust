@@ -67,9 +67,12 @@
                     </el-checkbox-group>
                 </el-form-item>
                 <el-form-item label="" prop="type">
-                    <el-checkbox-group v-model="ruleForm.type">
-                    <el-checkbox label="我已阅读并同意《银行贷款协议》《保险条款》《保单电子版》《豆沙包服务协议》" name="type"></el-checkbox>
-                    </el-checkbox-group>
+                    <el-col :span="2">
+                        <el-checkbox-group v-model="ruleForm.type">
+                            <el-checkbox label="" name="type"></el-checkbox>
+                        </el-checkbox-group>
+                    </el-col>
+                    <span style="color:#606266">我已阅读并同意<label style="color:#409EFF;cursor:pointer;"><span>《银行贷款协议》</span><span>《保险条款》</span><span>《保单电子版》</span><span>《豆沙包服务协议》</span></label></span>
                 </el-form-item>
                 <el-form-item>
                     <div class="submit-btn" @click="submitForm('ruleForm')">提交申请</div>
@@ -128,16 +131,27 @@ export default {
     
   },
   methods: {
-      submitForm(formName) {
+    submitForm(formName) {
         this.$refs[formName].validate((valid) => {
-          if (valid) {
+            this.submitSuccess();
+            if (valid) {
             alert('submit!');
-          } else {
+            } else {
             console.log('error submit!!');
             return false;
-          }
+            }
         });
-      }
+    },
+    //提交成功弹窗
+    submitSuccess() {
+        this.$alert('您已申请成功，2-3个工作日即可放款具体进入可在贷款详情中查看！', '恭喜提交成功', {
+            confirmButtonText: '知道了',
+            center:true,
+            callback: action => {
+                this.$router.push({path:'/registerEnd'})
+            }
+        });
+    }
     }
 }
 </script>

@@ -16,38 +16,41 @@
         </div>
         <div class="wscn-http404-container">
             <el-form :model="registerForm" :rules="rules" ref="registerForm" label-width="100px" class="demo-registerForm">
-                <el-form-item label="手机号" prop="phone">
-                    <el-input v-model="registerForm.phone"></el-input>
+                <el-form-item label="手机号" prop="telephone">
+                    <el-input v-model="registerForm.telephone" @blur="checkPhone"></el-input>
                 </el-form-item>
                 <el-form-item label="密码" prop="password">
-                    <el-input v-model="registerForm.password"></el-input>
+                    <el-input v-model="registerForm.password" type="password"></el-input>
                 </el-form-item>
-                <el-form-item label="确认密码" prop="password2">
-                    <el-input v-model="registerForm.password2"></el-input>
+                <el-form-item label="确认密码" prop="confirmPassword">
+                    <el-input v-model="registerForm.confirmPassword" type="password"></el-input>
                 </el-form-item>
-                <el-form-item label="企业名称" prop="company">
-                    <el-input v-model="registerForm.company"></el-input>
+                <el-form-item label="企业名称" prop="companyName">
+                    <el-input v-model="registerForm.companyName"></el-input>
                 </el-form-item>
-                <el-form-item label="企业类型" prop="companyType">
-                    <el-checkbox-group v-model="registerForm.companyType">
-                        <el-checkbox label="进口" value="companyType"></el-checkbox>
-                        <el-checkbox label="出口" value="companyType"></el-checkbox>
+                <el-form-item label="企业类型" prop="productList">
+                    <el-checkbox-group v-model="registerForm.productList">
+                        <el-checkbox label="1" value="1">进口</el-checkbox>
+                        <el-checkbox label="0" value="0">出口</el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
                 <el-row :gutter="20">
                     <el-col :span="16">
-                    <el-form-item label="验证码"  prop="phoneCode">
-                        <el-input v-model="registerForm.phoneCode"></el-input>
+                    <el-form-item label="验证码"  prop="verifyCode">
+                        <el-input v-model="registerForm.verifyCode"></el-input>
                     </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                    <el-button >{{paracont}}</el-button>
+                    <el-button @click="getCode" :disabled="btnStatus">{{paracont}}</el-button>
                     </el-col>
                 </el-row>
                 <el-form-item label="">
-                    <el-checkbox-group v-model="check">
-                        <el-checkbox label="我已阅读并同意《豆沙包商户平台合作协议》" name="type"></el-checkbox>
-                    </el-checkbox-group>
+                    <el-col :span="2">
+                        <el-checkbox-group v-model="check">
+                            <el-checkbox label="" name="type"></el-checkbox>
+                        </el-checkbox-group>
+                    </el-col>
+                    <span style="color:#606266">我已阅读并同意<a target="_blank" href="../assets/pdf/豆沙包科技产品合作协议.pdf" style="color:#409EFF;cursor:pointer;" >《豆沙包商户平台合作协议》</a></span>
                 </el-form-item>
                 <el-form-item>
                     <div class="submit-btn" @click="submitRegisterForm('registerForm')">注册</div>
@@ -64,11 +67,11 @@
             center
             :before-close="handleClose">
             <el-form :model="loginForm" :rules="rules" ref="loginForm" label-width="100px" class="demo-registerForm">
-                <el-form-item label="手机号" prop="phone">
-                    <el-input v-model="loginForm.phone"></el-input>
+                <el-form-item label="手机号" prop="telephone">
+                    <el-input v-model="loginForm.telephone"></el-input>
                 </el-form-item>
                 <el-form-item label="密码" prop="password">
-                    <el-input v-model="loginForm.password"></el-input>
+                    <el-input v-model="loginForm.password" type="password"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -79,65 +82,81 @@
 </template>
 
 <script>
-
+  import { isUsernameRegister, getVerifyCode, register, login  } from '@/api/register'
 export default {
-  name: 'register',
   data() {
     return {
         registerForm: {
-            phone: '',
+            telephone: '',
             password: '',
-            password2: '',
-            company: '',
-            companyType: [],
-            phoneCode: ''
+            confirmPassword: '',
+            companyName: '',
+            productList: [],
+            verifyCode: ''
         },
         loginForm:{
-            phone: '',
+            telephone: '',
             password: '',
         },
         rules: {
-            phone: [
-                { required: true, message: '请输入手机号', trigger: 'blur' }
+            telephone: [
+                { required: true, message: '请输入手机号', trigger: 'blur' },
+                { pattern: /^1[34578]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }
             ],
             password: [
-                { required: true, message: '请输入密码', trigger: 'blur' }
+                { required: true, message: '请输入密码', trigger: 'blur' },
+                { min: 6, max:20,message: '密码在6-20位', trigger: 'blur' }
             ],
-            password2: [
-                { required: true, message: '请确认密码', trigger: 'blur' }
+            confirmPassword: [
+                { required: true, message: '请确认密码', trigger: 'blur' },
+                { min: 6, max:20,message: '密码在6-20位', trigger: 'blur' }
             ],
-            company: [
-                { required: true, message: '请输入企业名称', trigger: 'blur' }
+            companyName: [
+                { required: true, message: '请输入企业名称', trigger: 'blur' },
+                { max:50,message: '不能超过50个字', trigger: 'blur' }
             ],
-            companyType: [
+            productList: [
                 { type: 'array', required: true, message: '请选择企业类型', trigger: 'blur' }
             ],
-            phoneCode: [
+            verifyCode: [
                 { required: true, message: '请输入验证码', trigger: 'blur' }
             ]
         },
         check:false,
         loginDialogVisible:false,
-        paracont:'获取验证码'
+        paracont:'获取验证码',
+        btnStatus:false
     }
   },
   computed: {
     
   },
   methods: {
+    // 手机号是否注册
+    checkPhone(){
+        isUsernameRegister({telephone:this.registerForm.telephone}).then(result=>{
+        }).catch(err=>{
+            this.$message.error(err.msg)
+            return false
+        })
+    },
     //注册
     submitRegisterForm(formName) {
     this.$refs[formName].validate((valid) => {
         if (valid) {
             if(this.check){
-                this.registerSuccess()
+                register(this.registerForm).then(result=>{
+                    this.registerSuccess()
+                }).catch(err=>{
+                    this.$message.error(err.msg)
+                })
+                // this.registerSuccess()
             }else{
                 this.$message.warning('请先阅读并同意《豆沙包商户平台合作协议》')
             }
             
         } else {
-        console.log('error submit!!');
-        return false;
+            return false;
         }
     });
     },
@@ -164,20 +183,21 @@ export default {
         var second = null, timePromise = undefined;
         if (second === null) {
             second = 60;
-            if (!this.registerForm.phone) {
+            if (!this.registerForm.telephone) {
                 this.$message({message:'手机号不能为空',type:'error'})
                 second = null;
                 return false;
             } else {
-                getVerfyCode(this.user.username, this.setPasswordForm.photoCode).then(result => {
+                getVerifyCode({telephone:this.registerForm.telephone}).then(result => {
                     const _this = this;
+                    this.btnStatus = true;
                     timePromise = setInterval(function () {
                         if (second <= 0) {
                             clearInterval(timePromise);
                             timePromise = undefined;
                             second = null;
                             _this.paracont = "重发验证码";
-                            _this.iconDis = false;
+                            _this.btnStatus = false;
                         } else {
                             _this.paracont = second + "s";
                             second--;
@@ -192,6 +212,23 @@ export default {
             return false;
         }
     },
+    // 登录
+        submitLoginForm(formName){
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    console.log(7777,this.loginForm)
+                    login(this.loginForm).then(result=>{
+                        console.log(11111,result)
+                        localStorage.setItem('user', JSON.stringify(result))
+                        this.$$router.push({path:'/businessInfo'})
+                    }).catch(err=>{
+                        this.$message.error(err.msg)
+                    })
+                } else {
+                    return false;
+                }
+            })
+        }
     }
 }
 </script>

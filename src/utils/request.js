@@ -26,7 +26,7 @@ service.interceptors.request.use(config => {
     //   };
     config.headers['Content-Type'] = 'application/json; charset=UTF-8'
     if (store.getters.user) {
-        config.headers['token'] = getUser().token
+        config.headers['token'] = JSON.parse(localStorage.getItem("user")).token;
     }
 
     return config
@@ -43,7 +43,7 @@ service.interceptors.response.use(
         * code为非20000是抛错 可结合自己业务进行修改
         */
         const res = response.data
-        console.log("response",res)
+        console.log("response111111111",res)
         if (res.code !== 0) {
             
             return Promise.reject(response.data)

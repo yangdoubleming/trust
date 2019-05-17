@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { isvalidUsername } from "@/utils/validate";
+  import { accountSsoService } from '@/api/register'
 
 export default {
     name: "login",
