@@ -10,6 +10,7 @@ export const constantRouterMap = [
     { path: '/insuranceInfo', component: () => import('@/views/insuranceInfo'), hidden: true },
     { path: '/loanRecords', component: () => import('@/views/loanRecords'), hidden: true },
     { path: '/registerEnd', component: () => import('@/views/registerEnd'), hidden: true },
+    { path: '/loanDetails', component: () => import('@/views/loanDetails'), hidden: true },
 ];
 export default new Router({
     mode: "history",

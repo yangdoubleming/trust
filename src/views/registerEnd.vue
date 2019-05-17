@@ -20,7 +20,7 @@
                 <div class="icon-word" style="float:left">再去贷款</div>
                 <img :src="arrow_right" class="arrow-right" style="float:right" />
             </div>
-            <div class="jupm-btn" style="float:right" @click="linkTo('loanRecords')">
+            <div class="jupm-btn" style="float:right" @click="linkTo('loanDetails')">
                 <img :src="file" class="icon-img" style="float:left" />
                 <div class="icon-word" style="float:left">我的贷款记录</div>
                 <img :src="arrow_right" class="arrow-right" style="float:right" />

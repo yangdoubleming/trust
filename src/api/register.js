@@ -63,3 +63,10 @@ export function findCiCompanyLoanList(param) {
         data: param
     })
 }
+
+export function getCiCompanyLoanById(id) {
+    return request({
+        url: `/ci/getCiCompanyLoanById?id=${id}`,
+        method: 'post'
+    })
+}
