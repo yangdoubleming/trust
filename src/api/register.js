@@ -70,3 +70,10 @@ export function getCiCompanyLoanById(id) {
         method: 'post'
     })
 }
+
+export function getCiCompanyAndPlatformByUser() {
+    return request({
+        url: `/ci/getCiCompanyAndPlatformByUser`,
+        method: 'post'
+    })
+}

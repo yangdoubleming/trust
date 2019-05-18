@@ -1,5 +1,5 @@
 <template>
-    <section class="wscn-http404-container">
+    <section class="wscn-http404-container6">
         <!--查询栏-->
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="ruleForm" :rules="rules" ref="ruleForm" class="demo-form-inline">
@@ -8,6 +8,9 @@
                         <el-option label="1个月" value="1"></el-option>
                         <el-option label="2个月" value="2"></el-option>
                         <el-option label="3个月" value="3"></el-option>
+                        <el-option label="4个月" value="4"></el-option>
+                        <el-option label="5个月" value="5"></el-option>
+                        <el-option label="6个月" value="6"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="贷款状态" prop="status">
@@ -33,9 +36,9 @@
             <el-table-column prop="contactName" label="店铺名称" width="280"> </el-table-column>
             <el-table-column prop="loanTerm" label="贷款期限（月）" width="120"></el-table-column>
             <el-table-column prop="loanAmount" label="贷款金额（元）" width="180"> </el-table-column>
-            <el-table-column prop="applyTime" label="申请时间" width="160"> </el-table-column>
-            <el-table-column prop="status" label="贷款状态" width="250"></el-table-column>
-            <el-table-column prop="name" label="操作" width="180">
+            <el-table-column prop="applyTime" label="申请时间" width=""> </el-table-column>
+            <el-table-column prop="status"  :formatter="statusText" label="贷款状态" width=""></el-table-column>
+            <!-- <el-table-column prop="name" label="操作" width="180">
                 <template slot-scope="scope">
                     <el-button
                         @click="customerInsureDetails(scope.row)"
@@ -44,7 +47,7 @@
                         详情
                     </el-button>
                 </template>
-            </el-table-column>
+            </el-table-column> -->
         </el-table>
 
         <!-- 工具条 -->
@@ -150,12 +153,29 @@
             customerInsureDetails(row){
                 this.$router.push({path:'/orderManage/customerInsureDetails',query: {id:row.id,productId:row.productId}})
             },
+            statusText(row){
+                if(row.status == 1){
+                    return '审核中'
+                }else if(row.status == 2){
+                    return '已终止'
+                }else if(row.status == 3){
+                    return '放款中'
+                }else if(row.status == 4){
+                    return '未结清'
+                }else if(row.status == 5){
+                    return '已逾期'
+                }else if(row.status == 6){
+                    return '已结清'
+                }else if(row.status == 7){
+                    return '还款中'
+                }
+            }
         }
     }      
 </script>
 
 <style>
-.wscn-http404-container{
+.wscn-http404-container6{
   width: 90%;
     margin: 50px auto;
 }

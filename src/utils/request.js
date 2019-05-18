@@ -16,7 +16,7 @@ import { getUser } from '@/utils/auth'
 const service = axios.create({
     // baseURL: "http://preprod.saas.dousha8ao.com:8080", // 预发布环境
     baseURL: BASE_URL, // 测试环境
-    timeout: 5000 // 请求超时时间
+    timeout: 7000 // 请求超时时间
 })
 
 // request拦截器

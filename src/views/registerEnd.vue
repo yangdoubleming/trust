@@ -1,6 +1,7 @@
 <template>
     <section>
-        <div class="header">
+        <img :src="banner1" class="banner" />
+        <!-- <div class="header">
             <div class="arrow_01">
                 <div class="word "><span class="num">1.   </span>登录/注册</div>
             </div>
@@ -8,25 +9,25 @@
                 <div class="word "><span class="num">2.   </span>商户信息补全</div>
             </div>
             <div class="arrow_02">
-                <div class="word "><span class="num">3.   </span>投保信息</div>
+                <div class="word "><span class="num">3.   </span>申请信息</div>
             </div>
             <div class="arrow_03">
                 <div class="word wordColor"><span class="num">4.   </span>完成</div>
             </div>
-        </div>
+        </div> -->
         <div class="header">
             <div class="jupm-btn" style="float:left" @click="linkTo('businessInfo')">
                 <img :src="book" class="icon-img" style="float:left" />
-                <div class="icon-word" style="float:left">再去贷款</div>
+                <div class="icon-word" style="float:left">申请贷款</div>
                 <img :src="arrow_right" class="arrow-right" style="float:right" />
             </div>
-            <div class="jupm-btn" style="float:right" @click="linkTo('loanDetails')">
+            <div class="jupm-btn" style="float:right" @click="linkTo('loanRecords')">
                 <img :src="file" class="icon-img" style="float:left" />
                 <div class="icon-word" style="float:left">我的贷款记录</div>
                 <img :src="arrow_right" class="arrow-right" style="float:right" />
             </div>
         </div>
-        <img :src="banner" class="banner" />
+        <!-- <img :src="banner" class="banner" /> -->
     </section>
 </template>
 
@@ -35,11 +36,13 @@ import banner from '@/assets/register/banner.jpg'
 import book from '@/assets/register/book.png'
 import file from '@/assets/register/file.png'
 import arrow_right from '@/assets/register/arrow_right.png'
+import banner1 from '@/assets/register/banner_01.png'
 
 export default {
     name: 'register',
     data() {
         return {
+            banner1,
             banner,
             book,
             file,
@@ -117,9 +120,10 @@ export default {
 }
 .banner{
     display: block;
-    width: 1203px;
+    width: 100%;
     margin: 0 auto;
     margin-top: 30px;
+    margin-bottom: 30px;
 }
 .icon-img{
     margin: 25px 20px 0 66px
