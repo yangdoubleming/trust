@@ -466,6 +466,5 @@ export default {
     display: block;
     width: 100%;
     margin: 0 auto;
-    margin-top: 30px;
 }
 </style>
