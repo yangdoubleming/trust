@@ -1,3 +1,3 @@
-const BASE_URL='http://192.168.1.158:8082'  //接口地址
-const IMG_URL='http://192.168.1.158:8000'  // 图片地址
+const BASE_URL='test.api.dousha8ao.com/freightsure'  //接口地址
+const IMG_URL='test.api.dousha8ao.com/freightsure/upload'  // 图片地址
 export{ BASE_URL, IMG_URL}
